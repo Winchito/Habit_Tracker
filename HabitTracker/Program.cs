@@ -79,6 +79,10 @@ namespace HabitTracker
             }
         }
 
+        /*
+         * ----------------------------------TableExists METHOD -----------------------------------------
+         * Verifies if a table exists in the database through a SQL sentence
+         */
         public static bool TableExists(SQLiteConnection sqlConnection)
         {
             try
@@ -110,6 +114,12 @@ namespace HabitTracker
                 return false;
             }
         }
+
+       /*
+        * ---------------------------------- ViewHabit METHOD -----------------------------------------
+        * First check if table exists, if true shows the tables. The functionVerificator bool variables just verifies if it is true to redirect to ViewRecordsFromHabits to the user to see the records inside the tables.
+        */
+
         public static void ViewHabit(SQLiteConnection sqlConnection, bool functionVerificator)
         {
             Console.Clear();
@@ -122,23 +132,26 @@ namespace HabitTracker
                     {
                         int i = 1;
                         sqlConnection.Open();
+
                         string sqlSentence = @"SELECT * FROM sqlite_master WHERE TYPE='table'";
                         SQLiteCommand command = new SQLiteCommand(sqlSentence, sqlConnection);
+
                         var reader = command.ExecuteReader();
 
                         if (reader.HasRows)
                         {
                             while (reader.Read())
                             {
-                            var name = reader.GetString(1);
-                            Console.WriteLine($"{i}. {name}");
-                            i++;
+                                var name = reader.GetString(1);
+                                Console.WriteLine($"{i}. {name}");
+                                i++;
                             }
-                        i = 0;
+                            i = 0;
                         if (functionVerificator)
                         {
                             Console.Write("Select the habit you want to see\nType cancel to abort\n Select an option: ");
                             string habitSended = Console.ReadLine();
+
                             if(habitSended.ToLower() == "cancel")
                             {
                                 sqlConnection.Close();
@@ -164,6 +177,10 @@ namespace HabitTracker
             }
         }
 
+       /*
+        * ---------------------------------- ViewRecordsFromHabits METHOD -----------------------------------
+        * Just shows the records from the tables through a SQL Select sentence and the habitTable string parameter.
+        */
         public static void ViewRecordsFromHabits(string habitTable, SQLiteConnection sqlConnection)
         {
             try
@@ -204,6 +221,11 @@ namespace HabitTracker
               
         }
 
+        /*
+         * ---------------------------------- CreateHabit METHOD -----------------------------------
+         * Asks the user the habit name, then converts the string to a "valid" sql table name and verifies if the table exists on the Database, if not, creates ihe table in an SQL Create sentence
+         */
+
         public static void CreateHabit(SQLiteConnection sqlConnection)
         {
             Console.Clear();
@@ -212,11 +234,13 @@ namespace HabitTracker
             {
                 Console.Write("Insert the habit name you want to start\nType cancel to exit\nSelect an option:  ");
                 string habitName = Console.ReadLine();
+
                 if(habitName.ToLower() == "cancel")
                 {
                     sqlConnection.Close();
                     return;
                 }
+
                 string habitNameTable = habitName.ToLower().Replace(" ", "_");
                 //string habitNameTable = habitName.Replace(" ", "_");
                 //Console.WriteLine(habitNameTable + " --- Name Debugger");
@@ -321,7 +345,9 @@ namespace HabitTracker
                 return true;
             }
         }
-
+        /* --------------------------------- InsertRecord METHOD --------------------------------------
+         * Shows the table to user and asks which habit has to create a Record
+         */
         public static void InsertRecord(SQLiteConnection sqlConnection)
         {
             Console.Clear();
@@ -366,10 +392,11 @@ namespace HabitTracker
                 sqlConnection.Close();
                 return;
             }
-
-
-
         }
+
+        /* --------------------------------- DeleteRecord METHOD --------------------------------------
+         * First asks the user if it wants to delete a habit or a record, if it is a habit redirects to DeleteHabit and shows the tables, if it is a record, redirects to DeleteRow and shows the tables to select one and then shows the records, the user has to input the ID of the record to delete it.
+         */
         public static void DeleteRecord(SQLiteConnection sqlConnection)
         {
             Console.Clear();
@@ -488,6 +515,9 @@ namespace HabitTracker
 
         }
 
+        /* --------------------------------- UpdateRecord METHOD --------------------------------------
+         * Shows the tables and the ask for the id of the record, then asks a new Quantity to the user
+         */
         public static void UpdateRecord(SQLiteConnection sqlConnection)
         {
             TableExists(sqlConnection);
